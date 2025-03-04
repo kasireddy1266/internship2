@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Image Slider</title>
+  <style>
+    /* General Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-image: url('https://thumbs.dreamstime.com/b/popular-clothing-brands-logos-280619223.jpg');
+    }
+
+    /* Slider Container */
+    .slider {
+      position: relative;
+      width: 90%;
+      max-width: 800px;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(255, 27, 27, 0.2);
+    }
+
+    /* Images Wrapper */
+    .slider-images {
+      display: flex;
+      transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .slider-images img {
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    /* Navigation Controls */
+    .slider-controls {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+    }
+
+    .slider-button {
+      background-color: rgba(49, 51, 47, 0.5);
+      color: #19b3a9;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 50%;
+      font-size: 18px;
+      transition: background-color 0.3s ease;
+    }
+
+    .slider-button:hover {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    /* Dots for Current Slide */
+    .slider-dots {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .slider-dot {
+      width: 10px;
+      height: 10px;
+      margin: 0 5px;
+      background-color: #a82525;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .slider-dot.active {
+      background-color: #901515;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .slider-button {
+        padding: 8px 12px;
+        font-size: 16px;
+      }
+
+      .slider-dot {
+        width: 8px;
+        height: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slider">
+    <div class="slider-images">
+      <img src="https://www.versace.com/dw/image/v2/BGWN_PRD/on/demandware.static/-/Sites-ver-master-catalog/default/dwa021ea63/original/90_1003926-1A09783_5U960_18_Barocco~Silk~Shirt-Clothing-Versace-online-store_1_1.jpg?sw=850&q=85&strip=true" alt="Image 1">
+      <img src="https://static.zara.net/assets/public/2aa0/2e3d/14ba4c7e8f24/5c1f1e069705/07545407801-a1/07545407801-a1.jpg?ts=1736932492125&w=816" alt="Image 2">
+      <img src="https://assets.christiandior.com/is/image/diorprod/LOOK_H_25_1_LOOK_004_E07-1?$lookDefault_GH-GHC$&crop=568,0,1861,2000&bfc=on&qlt=85" alt="Image 3">
+    </div>
+
+    <div class="slider-controls">
+      <button class="slider-button prev">&lt;</button>
+      <button class="slider-button next">&gt;</button>
+    </div>
+
+    <div class="slider-dots">
+      <div class="slider-dot active" data-index="0"></div>
+      <div class="slider-dot" data-index="1"></div>
+      <div class="slider-dot" data-index="2"></div>
+    </div>
+  </div>
+
+  <script>
+    const sliderImages = document.querySelector('.slider-images');
+    const images = document.querySelectorAll('.slider-images img');
+    const prevButton = document.querySelector('.prev');
+    const nextButton = document.querySelector('.next');
+    const dots = document.querySelectorAll('.slider-dot');
+
+    let currentIndex = 0;
+    const totalImages = images.length;
+    let autoSlideInterval = setInterval(() => {
+      updateCircularSlider('next');
+    }, 4000);
+
+    let restartTimeout;
+
+    function updateSlider(index) {
+      sliderImages.style.transform = `translateX(-${index * 100}%)`;
+      dots.forEach(dot => dot.classList.remove('active'));
+      dots[index].classList.add('active');
+    }
+
+    function updateCircularSlider(direction) {
+      if (direction === 'next') {
+        currentIndex = (currentIndex + 1) % totalImages;
+      } else if (direction === 'prev') {
+        currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+      }
+      updateSlider(currentIndex);
+    }
+
+    function stopAutoSlide() {
+      clearInterval(autoSlideInterval);
+      autoSlideInterval = null;
+      clearTimeout(restartTimeout); // Clear any pending restart
+      restartTimeout = setTimeout(startAutoSlide, 60000); // Restart after 1 minute
+    }
+
+    function startAutoSlide() {
+      autoSlideInterval = setInterval(() => {
+        updateCircularSlider('next');
+      }, 4000);
+    }
+
+    prevButton.addEventListener('click', () => {
+      stopAutoSlide();
+      updateCircularSlider('prev');
+    });
+
+    nextButton.addEventListener('click', () => {
+      stopAutoSlide();
+      updateCircularSlider('next');
+    });
+
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        stopAutoSlide();
+        currentIndex = index;
+        updateSlider(currentIndex);
+      });
+    });
+  </script>
+</body>
+</html>
